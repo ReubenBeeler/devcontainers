@@ -150,9 +150,27 @@ fi
 	fi
 	export DISPLAY=:99
 
-	if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-		eval $(dbus-launch --sh-syntax)
-		export DBUS_SESSION_BUS_ADDRESS
+	# Single fixed-address session bus, shared container-wide. containerEnv in
+	# devcontainer.json normally sets DBUS_SESSION_BUS_ADDRESS; this block only
+	# self-heals a dead bus — and its keyring, because a healed bus without an
+	# unlocked gnome-keyring would let libsecret D-Bus-activate a LOCKED daemon
+	# whose GUI unlock prompt hangs headless clients (e.g. supabase login).
+	export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/tmp/dbus-session}"
+	if [ "$DBUS_SESSION_BUS_ADDRESS" = "unix:path=/tmp/dbus-session" ] && \
+			! dbus-send --session --dest=org.freedesktop.DBus --print-reply \
+				/org/freedesktop/DBus org.freedesktop.DBus.Peer.Ping &>/dev/null; then
+		(
+			flock 9
+			if ! dbus-send --session --dest=org.freedesktop.DBus --print-reply \
+					/org/freedesktop/DBus org.freedesktop.DBus.Peer.Ping &>/dev/null; then
+				rm -f /tmp/dbus-session
+				dbus-daemon --session --address="unix:path=/tmp/dbus-session" --fork
+				pkill -9 -f gnome-keyring-daemon 2>/dev/null
+				# Password is the literal newline from `echo ""` — keep byte-identical
+				# with lib/setup-dbus-keyring.sh or unlocks fail.
+				echo "" | gnome-keyring-daemon --unlock --components=secrets --daemonize >/dev/null 2>&1
+			fi
+		) 9>/tmp/dbus-session.lock
 	fi
 
 	if ! pgrep -x at-spi2-registryd >/dev/null 2>&1; then

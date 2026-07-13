@@ -3,6 +3,20 @@
 
 	set -euo pipefail
 
+	echo ┌───────────────────────┐
+	echo │ D-Bus + gnome-keyring │
+	echo └───────────────────────┘
+
+	# Secret Service for CLI credential storage (supabase login, etc.) —
+	# postStart.sh runs lib/setup-dbus-keyring.sh on every container start.
+	# dbus-session-bus-common provides session.conf, which dbus-daemon
+	# --session needs (the dbus metapackage only pulls the system-bus config).
+	# No dbus-x11/X needed: the bus uses a fixed socket path, and the keyring
+	# is unlocked via stdin, never a GUI prompt.
+	sudo apt-get update -y > /dev/null
+	sudo apt-get install -y > /dev/null \
+		dbus dbus-session-bus-common gnome-keyring libsecret-tools
+
 	echo ┌─────┐
 	echo │ Act │ # (run GitHub Actions locally)
 	echo └─────┘

@@ -12,6 +12,12 @@
 	"mounts": [
 		"source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
 	],
+	// One pinned D-Bus session bus for every process in the container, so the
+	// gnome-keyring unlocked by postStart.sh is the one libsecret clients
+	// (e.g. supabase login) actually reach. See lib/setup-dbus-keyring.sh.
+	"containerEnv": {
+		"DBUS_SESSION_BUS_ADDRESS": "unix:path=/tmp/dbus-session"
+	},
 	"runArgs": [
 		"--network=host",
 		"--device=/dev/kvm",

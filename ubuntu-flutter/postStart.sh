@@ -4,7 +4,9 @@
 # safe to call multiple times (e.g. inline from postCreate.sh).
 { # prevents execution from breaking from concurrent modification
 	set -euo pipefail
-	
+
+	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 	echo ┌─────┐
 	echo │ DNS │
 	echo └─────┘
@@ -82,19 +84,9 @@
 	fi
 	export DISPLAY=:99
 
-	echo "==> Starting D-Bus session bus..."
-	if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] || \
-			! dbus-send --session --dest=org.freedesktop.DBus --print-reply \
-				/org/freedesktop/DBus org.freedesktop.DBus.Peer.Ping &>/dev/null; then
-		eval "$(dbus-launch --sh-syntax)"
-		export DBUS_SESSION_BUS_ADDRESS
-	fi
-
-	echo "==> Unlocking gnome-keyring with empty password..."
-	if command -v gnome-keyring-daemon >/dev/null 2>&1; then
-		pkill -9 -f gnome-keyring-daemon || true
-		echo "" | gnome-keyring-daemon --unlock > /dev/null
-	fi
+	echo "==> Setting up shared D-Bus session bus and unlocked gnome-keyring..."
+	bash "$SCRIPT_DIR/../lib/setup-dbus-keyring.sh"
+	export DBUS_SESSION_BUS_ADDRESS="unix:path=/tmp/dbus-session"
 
 	echo "==> Starting AT-SPI2 accessibility bus launcher..."
 	if [ -x /usr/libexec/at-spi-bus-launcher ] && \
@@ -116,8 +108,7 @@
 	echo ┌─────────────────┐
 	echo │ Sanity check... │
 	echo └─────────────────┘
-	
-	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 	bash "$SCRIPT_DIR/test-postStart.sh"
 
 	echo ┌─\───────────────────────┐

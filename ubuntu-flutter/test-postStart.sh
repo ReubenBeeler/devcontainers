@@ -106,6 +106,57 @@ fi
 check_process "at-spi2-registryd"
 check_process "openbox"
 
+# ── Secret Service ────────────────────────────────────────────────────────────
+# gnome-keyring must be unlocked on the pinned session bus, or libsecret
+# clients (supabase login, etc.) hang forever on a headless unlock prompt.
+
+echo
+echo "── Secret Service ─────────────────────────────────────────────────────────"
+
+if [ "${DBUS_SESSION_BUS_ADDRESS:-}" = "unix:path=/tmp/dbus-session" ]; then
+	pass "DBUS_SESSION_BUS_ADDRESS is the pinned bus"
+else
+	fail "DBUS_SESSION_BUS_ADDRESS is '${DBUS_SESSION_BUS_ADDRESS:-<unset>}' (expected unix:path=/tmp/dbus-session)"
+fi
+
+if dbus-send --session --dest=org.freedesktop.DBus --print-reply \
+		/org/freedesktop/DBus org.freedesktop.DBus.Peer.Ping &>/dev/null; then
+	pass "session bus reachable"
+else
+	fail "session bus not reachable"
+fi
+
+check_process "gnome-keyring-daemon"
+
+# NameHasOwner is a bus-driver call and never D-Bus-activates the service;
+# querying org.freedesktop.secrets directly while unowned would spawn a
+# fresh LOCKED daemon.
+if dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+		/org/freedesktop/DBus org.freedesktop.DBus.NameHasOwner \
+		string:org.freedesktop.secrets 2>/dev/null | grep -q 'boolean true'; then
+	pass "org.freedesktop.secrets is owned"
+	if dbus-send --session --print-reply --dest=org.freedesktop.secrets \
+			/org/freedesktop/secrets/aliases/default \
+			org.freedesktop.DBus.Properties.Get \
+			string:org.freedesktop.Secret.Collection string:Locked 2>/dev/null \
+			| grep -q 'boolean false'; then
+		pass "default collection is unlocked"
+	else
+		fail "default collection is LOCKED"
+	fi
+else
+	fail "org.freedesktop.secrets has no owner"
+fi
+
+if printf 'poststart-roundtrip' | timeout 10 secret-tool store \
+		--label='postStart test' poststart-test v1 2>/dev/null \
+		&& [ "$(timeout 10 secret-tool lookup poststart-test v1 2>/dev/null)" = "poststart-roundtrip" ]; then
+	pass "secret-tool store/lookup roundtrip"
+	timeout 10 secret-tool clear poststart-test v1 2>/dev/null || true
+else
+	fail "secret-tool store/lookup roundtrip failed (would hang supabase login)"
+fi
+
 # ── Summary ────────────────────────────────────────────────────────────────────
 
 echo
