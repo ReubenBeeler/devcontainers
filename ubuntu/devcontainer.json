@@ -20,7 +20,12 @@
 	// Supabase ports are served by Docker-in-Docker inside the container, so
 	// VS Code port-forwarding is not needed.  "ignore" prevents the host from
 	// claiming these ports when nothing is actively listening on them.
+	// 8089 is SRH (Redis REST API), which the backend tests reach at
+	// localhost:8089 from inside the container: it must be published by docker
+	// but never forwarded out.  If the forwarder claims it first, start-redis.sh
+	// dies with "address already in use" and SRH never starts.
 	"portsAttributes": {
+		"8089": { "onAutoForward": "ignore" },
 		"54321": { "onAutoForward": "ignore" },
 		"54322": { "onAutoForward": "ignore" },
 		"54323": { "onAutoForward": "ignore" },
