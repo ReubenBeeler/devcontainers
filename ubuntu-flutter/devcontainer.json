@@ -54,6 +54,28 @@
 	"postStartCommand": "bash .devcontainer/ubuntu-flutter/postStart.sh",
 	"customizations": {
 		"vscode": {
+			// This container runs --network=host, so it shares ONE network
+			// namespace with the host: every port a service binds inside the
+			// container is already reachable at localhost on the host, and
+			// forwarding is not merely redundant but actively broken.  VS Code
+			// forwards container port N to local port N -- the same address --
+			// so the tunnel's own listener becomes what its other end dials.
+			// The result is a socket that accepts connections and never answers
+			// (a black hole), and which squats the port so docker can no longer
+			// publish it: start-redis.sh then dies with "address already in use"
+			// and SRH never starts.
+			//
+			// The per-port "ignore" entries in portsAttributes were whack-a-mole
+			// against this (8089 was simply never added).  Turning the feature
+			// off fixes the whole class.  Ports stay reachable exactly as before:
+			// the host hits Supabase directly at localhost:54321 (same netns),
+			// and a USB device reaches it via `adb reverse`, which tunnels over
+			// the adb socket — neither path ever used VS Code forwarding.  This
+			// only disables AUTO-forwarding; the Ports view "Forward a Port"
+			// button still works if a manual forward is ever wanted.
+			"settings": {
+				"remote.autoForwardPorts": false
+			},
 			"extensions": [
 				"dart-code.dart-code",
 				"dart-code.flutter"
