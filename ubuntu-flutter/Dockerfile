@@ -305,7 +305,8 @@ EOF
 	## Install Claude Code
 
 	curl -fsSL https://claude.ai/install.sh | bash -s stable
-	# see {"env": {"DISABLE_AUTOUPDATER": "1"}} in settings json for version pin
+	# see {"autoUpdatesChannel": "stable"} in settings json for auto-update channel
+	
 	export PATH="$HOME/.local/bin:$PATH"
 
 	## Claude Code Extensions

@@ -93,9 +93,7 @@
 		SETTINGS_PATH=~/.claude/settings.json
 		SETTINGS_JSON=\
 '{
-	"env": {
-		"DISABLE_AUTOUPDATER": "1"
-	},
+	"autoUpdatesChannel": "stable",
 	"statusLine": {
 		"type": "command",
 		"command": "bash ~/.claude/statusline.sh",
@@ -128,7 +126,7 @@ EOF
 	## Install Claude Code
 
 	curl -fsSL https://claude.ai/install.sh | bash -s stable
-	# see {"env": {"DISABLE_AUTOUPDATER": "1"}} in settings json for version pin
+	# see {"autoUpdatesChannel": "stable"} in settings json for auto-update channel
 
 	## Claude Code Extensions
 
