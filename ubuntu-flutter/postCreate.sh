@@ -12,6 +12,14 @@
 	sudo chown $USER ~/.claude
 	sudo chgrp $USER ~/.claude
 
+	# Trust the real workspace. ~/.claude.json is baked into the image, but $PWD
+	# there is / — the workspace path is only known now. Merge instead of
+	# rewriting so the mcpServers registered at build time by
+	# `claude mcp add --scope user` survive.
+	echo "==> Trusting workspace $PWD..."
+	jq --arg dir "$PWD" '.projects[$dir].hasTrustDialogAccepted = true' \
+		~/.claude.json | sponge ~/.claude.json
+
 	echo ┌──────────────────────────────────────┐
 	echo │ Prefer IPv4 over IPv6 since v6 fails │
 	echo └──────────────────────────────────────┘

@@ -1,10 +1,12 @@
 FROM mcr.microsoft.com/devcontainers/base:noble
 
 # Run post-build setup as vscode — installs SDKs and tools into the image.
-# postCreate.sh and postStart.sh are bind-mounted at runtime via devcontainer.json
-# into /opt/this-container/ (the entire Dockerfile directory, read-only).
-# The match-host-time-zone feature is absent here; the apt-mark hold tzdata line
-# in postBuild.sh is a no-op without it and causes no harm.
+# postCreate.sh and postStart.sh are not part of the image: devcontainer.json
+# runs them from the workspace at container create/start time.
+# The match-host-time-zone feature is layered on top of this image at create
+# time, not during the build, so the apt-mark hold tzdata line below protects
+# nothing here — it persists in the image so a later upgrade cannot clobber
+# that feature's bind-mounted timezone files.
 # Pass TZ at runtime via -e TZ=<zone> if timezone sync is needed.
 USER vscode
 RUN bash <<'EOPOSTCREATE'
@@ -291,14 +293,11 @@ fi
 
 	echo 'claude --permission-mode bypassPermissions' >> ~/.bash_history
 
-	cat > ~/.claude.json <<EOF
+	# Onboarding only. The workspace path is not knowable here — $PWD is / during
+	# the build — so postCreate.sh merges the trust entry for the real workspace.
+	cat > ~/.claude.json <<'EOF'
 {
-	"hasCompletedOnboarding": true,
-	"projects": {
-		"$PWD": {
-			"hasTrustDialogAccepted": true
-		}
-	}
+	"hasCompletedOnboarding": true
 }
 EOF
 
