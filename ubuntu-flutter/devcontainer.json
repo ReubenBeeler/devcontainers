@@ -77,8 +77,21 @@
 				"remote.autoForwardPorts": false
 			},
 			"extensions": [
+				"astro-build.astro-vscode",
+				"mhutchie.git-graph",
+				"github.vscode-github-actions",
+				"mads-hartmann.bash-ide-vscode",
+				"ms-azuretools.vscode-docker",
+				"github.github-vscode-theme",
+				"tomoki1207.pdf",
+				"repreng.csv",
+				"esbenp.prettier-vscode",
 				"dart-code.dart-code",
-				"dart-code.flutter"
+				"dart-code.flutter",
+				"ms-python.python",
+				"ms-python.debugpy",
+				"ms-python.vscode-pylance",
+				"charliermarsh.ruff"
 			]
 		}
 	}
