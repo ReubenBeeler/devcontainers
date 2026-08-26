@@ -2,14 +2,15 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
 	"name": "Ubuntu",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:noble",
+	// Pre-built image — see Dockerfile and scripts/rebuild-and-push.sh
+	// "image": "mcr.microsoft.com/devcontainers/base:noble",
+	"image": "localhost:5001/ubuntu:latest",
 	"features": {
 		"ghcr.io/hwaien/devcontainer-features/match-host-time-zone": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 	"mounts": [
-		"source=${localEnv:HOME}/.claude/.credentials.json,target=/home/vscode/.claude/.credentials.json,type=bind,consistency=cached"
+		"source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
 	],
 	// One pinned D-Bus session bus for every process in the container, so the
 	// gnome-keyring unlocked by postStart.sh is the one libsecret clients
@@ -33,7 +34,7 @@
 		"54327": { "onAutoForward": "ignore" }
 	},
 	// lifecycle scripts
-	"initializeCommand": "bash .devcontainer/ubuntu/hostConfig.sh",
+	"initializeCommand": "bash .devcontainer/ubuntu/initialize.sh",
 	"postCreateCommand": "bash .devcontainer/ubuntu/postCreate.sh",
 	"postStartCommand": "bash .devcontainer/ubuntu/postStart.sh",
 	"customizations": {

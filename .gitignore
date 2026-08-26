@@ -8,6 +8,8 @@ CLAUDE.md
 node_modules/
 package.json
 
-# hostConfig.sh copies statusline from host; transient, not committed
+# statusline was once copied from the host into the workspace; transient,
+# not committed. Both variants now bind-mount ~/.claude instead, so nothing
+# stages these — the entries only cover leftover copies on disk.
 ubuntu/statusline.sh
 ubuntu-flutter/statusline.sh

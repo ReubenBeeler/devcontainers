@@ -10,11 +10,11 @@ git submodule add git@github.com:ReubenBeeler/devcontainers.git .devcontainer/
 ## Variants
 | Variant | Base | Notes |
 | --- | --- | --- |
-| `ubuntu/` | `mcr.microsoft.com/devcontainers/base:noble` | Built JIT. A minimal container for faster devcontainer development and testing. |
+| `ubuntu/` | prebuilt `localhost:5001/ubuntu` | Built AOT. A minimal container for faster devcontainer development and testing. |
 | `ubuntu-flutter/` | prebuilt `localhost:5001/ubuntu-flutter` | Built AOT. Flutter, Android SDK + emulator, headless desktop. |
 
 ## Prebuilt images
-`ubuntu-flutter` bakes its dependencies into a Docker image
+Both variants bake their dependencies into a Docker image
 instead of installing them on every container create. The image is built once
 and served from a local registry at `localhost:5001`, so opening the container
 is fast after the first time.
