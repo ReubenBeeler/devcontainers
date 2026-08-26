@@ -8,8 +8,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Docker image ──────────────────────────────────────────────────────────────
+# ensure-image.sh is shared by all variants (see scripts/); passing this directory
+# selects the Dockerfile to build and names the image "ubuntu-flutter".
 echo "==> Ensuring Docker image is available..."
-bash "${SCRIPT_DIR}/ensure-image.sh"
+bash "${SCRIPT_DIR}/../scripts/ensure-image.sh" "${SCRIPT_DIR}"
 
 # ── ADB server ────────────────────────────────────────────────────────────────
 # The container shares the host network (--network=host), so the host's ADB

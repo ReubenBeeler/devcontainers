@@ -2,7 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
 	"name": "Ubuntu Flutter",
-	// Pre-built image — see Dockerfile and rebuild-and-push.sh
+	// Pre-built image — see Dockerfile and scripts/rebuild-and-push.sh
 	// "image": "mcr.microsoft.com/devcontainers/base:noble",
 	"image": "localhost:5001/ubuntu-flutter:latest",
 	"features": {
@@ -14,7 +14,7 @@
 	],
 	// One pinned D-Bus session bus for every process in the container, so the
 	// gnome-keyring unlocked by postStart.sh is the one libsecret clients
-	// (e.g. supabase login) actually reach. See lib/setup-dbus-keyring.sh.
+	// (e.g. supabase login) actually reach. See scripts/setup-dbus-keyring.sh.
 	"containerEnv": {
 		"DBUS_SESSION_BUS_ADDRESS": "unix:path=/tmp/dbus-session"
 	},

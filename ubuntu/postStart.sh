@@ -10,7 +10,7 @@
 	echo │ D-Bus + gnome-keyring │
 	echo └───────────────────────┘
 
-	bash "$SCRIPT_DIR/../lib/setup-dbus-keyring.sh"
+	bash "$SCRIPT_DIR/../scripts/setup-dbus-keyring.sh"
 
 	echo ┌─\───────────────────────┐
 	echo │ ✅  Completed PostStart │

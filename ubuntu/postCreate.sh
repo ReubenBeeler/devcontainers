@@ -8,7 +8,7 @@
 	echo └───────────────────────┘
 
 	# Secret Service for CLI credential storage (supabase login, etc.) —
-	# postStart.sh runs lib/setup-dbus-keyring.sh on every container start.
+	# postStart.sh runs scripts/setup-dbus-keyring.sh on every container start.
 	# dbus-session-bus-common provides session.conf, which dbus-daemon
 	# --session needs (the dbus metapackage only pulls the system-bus config).
 	# No dbus-x11/X needed: the bus uses a fixed socket path, and the keyring
@@ -82,8 +82,12 @@
 	sudo chown $USER ~/.claude
 	sudo chgrp $USER ~/.claude
 
-	# Copy statusline.sh staged by hostConfig.sh into the container
-	STATUSLINE_PATH='.devcontainer/ubuntu-flutter/statusline.sh'
+	# Copy statusline.sh staged by hostConfig.sh into the container.
+	# Derive the path from this script's own directory rather than hardcoding a
+	# variant name — hardcoding it is how this came to point at ubuntu-flutter,
+	# which has no statusline stage and so never staged the file.
+	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+	STATUSLINE_PATH="$SCRIPT_DIR/statusline.sh"
 	if [ -f "$STATUSLINE_PATH" ]; then
 		mv "$STATUSLINE_PATH" ~/.claude/statusline.sh
 	fi

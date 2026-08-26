@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup-dbus-keyring.sh — shared by the ubuntu and ubuntu-flutter variants.
+# setup-dbus-keyring.sh — shared by every variant; called from postStart.sh.
 #
 # Pins ONE D-Bus session bus at a fixed socket path for the whole container
 # and ensures gnome-keyring's Secret Service is UNLOCKED on it, so libsecret

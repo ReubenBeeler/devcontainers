@@ -85,7 +85,7 @@
 	export DISPLAY=:99
 
 	echo "==> Setting up shared D-Bus session bus and unlocked gnome-keyring..."
-	bash "$SCRIPT_DIR/../lib/setup-dbus-keyring.sh"
+	bash "$SCRIPT_DIR/../scripts/setup-dbus-keyring.sh"
 	export DBUS_SESSION_BUS_ADDRESS="unix:path=/tmp/dbus-session"
 
 	echo "==> Starting AT-SPI2 accessibility bus launcher..."

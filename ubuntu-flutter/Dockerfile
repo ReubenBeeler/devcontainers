@@ -167,7 +167,7 @@ fi
 				dbus-daemon --session --address="unix:path=/tmp/dbus-session" --fork
 				pkill -9 -f gnome-keyring-daemon 2>/dev/null
 				# Password is the literal newline from `echo ""` — keep byte-identical
-				# with lib/setup-dbus-keyring.sh or unlocks fail.
+				# with scripts/setup-dbus-keyring.sh or unlocks fail.
 				echo "" | gnome-keyring-daemon --unlock --components=secrets --daemonize >/dev/null 2>&1
 			fi
 		) 9>/tmp/dbus-session.lock
