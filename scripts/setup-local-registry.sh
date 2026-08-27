@@ -36,6 +36,13 @@ cmd_add() {
 
     mkdir -p "${DATA_DIR}"
 
+    # Check-then-act: every window reaches this concurrently via
+    # initialize.sh, so without the lock they all see no container and all run
+    # `docker run --name`; every one but the first dies with "name already in
+    # use" and takes initialize.sh down with it.
+    exec 9>"${DATA_DIR}/.setup.lock"
+    flock -w 60 9
+
     if docker ps -a --format '{{.Names}}' | grep -q "^${NAME}$"; then
         if docker ps --format '{{.Names}}' | grep -q "^${NAME}$"; then
             echo "Registry '${NAME}' is already running at localhost:${PORT}"

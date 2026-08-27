@@ -10,7 +10,11 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 	"mounts": [
-		"source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
+		"source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
+		// Locks shared with the host and the other containers, so concurrent
+		// starts cannot race over host-global state such as the one ADB server
+		// on port 5037.  Created by initialize.sh.
+		"source=${localEnv:HOME}/.cache/devcontainer-locks,target=/var/lock/devcontainer,type=bind"
 	],
 	// One pinned D-Bus session bus for every process in the container, so the
 	// gnome-keyring unlocked by postStart.sh is the one libsecret clients

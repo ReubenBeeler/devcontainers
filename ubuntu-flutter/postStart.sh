@@ -60,7 +60,17 @@
 	export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
 	echo "==> Verifying ADB connectivity to host server..."
-	adb devices
+	# Also forks a server when nothing answers on 5037, so it needs the lock
+	# initialize.sh describes — the bind mount makes it the same lock file.
+	# No /tmp fallback: /tmp is per-container, so it would race while looking
+	# guarded.
+	LOCK_DIR=/var/lock/devcontainer
+	if [ ! -d "$LOCK_DIR" ]; then
+		echo "ERROR: $LOCK_DIR is not mounted.  Rebuild the container so the" \
+			"lock mount added in devcontainer.json takes effect." >&2
+		exit 1
+	fi
+	flock -w 30 -o "$LOCK_DIR/adb-start.lock" adb devices
 
 	echo ┌──────────────────┐
 	echo │ Headless desktop │
