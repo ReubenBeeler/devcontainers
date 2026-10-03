@@ -61,7 +61,14 @@ RUN bash <<'EOPOSTCREATE'
 	echo 'claude --permission-mode bypassPermissions' >> ~/.bash_history
 
 	curl -fsSL https://claude.ai/install.sh | bash -s stable
-	# see {"autoUpdatesChannel": "stable"} in settings json for auto-update channel
+	# Pin auto-updates to stable. Uses managed settings because ~/.claude is a
+	# host bind mount, so the image can't write settings.json there.
+	sudo mkdir -p /etc/claude-code
+	sudo tee /etc/claude-code/managed-settings.json > /dev/null <<'EOF'
+{
+	"autoUpdatesChannel": "stable"
+}
+EOF
 
 	echo ┌─\────────────┐
 	echo │ ✅  Complete │
