@@ -37,6 +37,10 @@ bash scripts/setup-local-registry.sh add local-registry
 bash scripts/setup-local-registry.sh remove local-registry
 ```
 
+Only the host creates the registry. Inside a container with its own Docker,
+`add` (and so `ensure-image.sh`) only reuses a registry already reachable at
+`localhost:5001`, which needs `--network=host` (as in `ubuntu-everything`).
+
 `REGISTRY`, `IMAGE_NAME` and `TAG` can be overridden via the environment.
 
 `scripts/setup-dbus-keyring.sh` is likewise shared: it pins one D-Bus session bus

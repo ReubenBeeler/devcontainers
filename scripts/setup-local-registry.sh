@@ -30,9 +30,29 @@ parse_opts() {
     done
 }
 
+# True if a Docker registry answers on localhost:PORT (any status, e.g. 401).
+registry_up() {
+    curl -sI -m 3 "http://localhost:${PORT}/v2/" 2>/dev/null \
+        | grep -qi '^docker-distribution-api-version:'
+}
+
 cmd_add() {
     local NAME="${1:?'add' requires a registry name}"; shift
     parse_opts "$@"
+
+    # Inside a container running its own Docker (Docker-in-Docker), only reuse
+    # a registry already on the port. With --network=host, creating or starting
+    # one here would clash with the host's. Only the host creates, so the
+    # host-side lock below is the only one needed.
+    if [[ -f /.dockerenv || -f /run/.containerenv ]] && pgrep -x dockerd >/dev/null; then
+        if registry_up; then
+            echo "Using the registry at localhost:${PORT}"
+            return 0
+        fi
+        echo "ERROR: No registry at localhost:${PORT}, and this container runs its own Docker." >&2
+        echo "Create or start it on the host (reachable here only with --network=host)." >&2
+        exit 1
+    fi
 
     mkdir -p "${DATA_DIR}"
 
@@ -51,6 +71,9 @@ cmd_add() {
             docker start "${NAME}"
             echo "Registry ready at localhost:${PORT}"
         fi
+    elif registry_up; then
+        # A registry not managed by this script already serves the port.
+        echo "Registry already serving localhost:${PORT} (not container '${NAME}'); reusing it"
     else
         if ss -tlnp 2>/dev/null | grep -q ":${PORT}\b" \
            || netstat -tlnp 2>/dev/null | grep -q ":${PORT}\b"; then

@@ -81,18 +81,36 @@ RUN bash <<'EOPOSTCREATE'
 	export ANDROID_HOME
 	export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 
-	yes | sdkmanager --licenses > /dev/null 2>&1 || true
-	sdkmanager \
-		"platform-tools" \
-		"build-tools;34.0.0" \
-		"build-tools;35.0.0" \
-		"platforms;android-34" \
-		"platforms;android-35" \
-		"platforms;android-36" \
-		"ndk;28.2.13676358" \
-		"cmake;3.22.1" \
-		"emulator" \
+	# sdkmanager has no network timeout, so a dead connection hangs the build
+	# forever. Time out stalled reads, and retry installs below.
+	export SDKMANAGER_OPTS="-Dsun.net.client.defaultConnectTimeout=60000 -Dsun.net.client.defaultReadTimeout=120000"
+	yes | timeout 10m sdkmanager --licenses > /dev/null 2>&1 || true
+	SDK_PACKAGES=(
+		"platform-tools"
+		"build-tools;34.0.0"
+		"build-tools;35.0.0"
+		"platforms;android-34"
+		"platforms;android-35"
+		"platforms;android-36"
+		"ndk;28.2.13676358"
+		"cmake;3.22.1"
+		"emulator"
 		"system-images;android-36;google_apis;x86_64"
+	)
+	for attempt in 1 2 3; do
+		timeout 2h sdkmanager "${SDK_PACKAGES[@]}" || true
+		# sdkmanager can exit 0 after a failed download, so check each
+		# package's package.xml (how sdkmanager marks it installed).
+		missing=()
+		for pkg in "${SDK_PACKAGES[@]}"; do
+			[ -f "$ANDROID_HOME/${pkg//;//}/package.xml" ] || missing+=("$pkg")
+		done
+		[ ${#missing[@]} -eq 0 ] && break
+		echo "sdkmanager attempt ${attempt}/3 missing: ${missing[*]}" >&2
+		[ "$attempt" -eq 3 ] && exit 1
+		sleep 10
+	done
+	unset SDKMANAGER_OPTS
 
 	# Create Pixel API 36 AVD
 	echo "no" | avdmanager create avd \
@@ -236,7 +254,9 @@ fi
 	echo │ Firebase │
 	echo └──────────┘
 
-	curl -sL https://firebase.tools | bash
+	# The installer ends with `firebase --version`, which needs a writable
+	# working dir for firebase-debug.log. During the build that dir is /.
+	(cd "$HOME" && curl -sL https://firebase.tools | bash)
 	dart pub global activate flutterfire_cli
 
 	echo ┌────────┐
