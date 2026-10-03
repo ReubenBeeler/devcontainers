@@ -1,10 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Ubuntu",
+	"name": "Ubuntu Slim",
 	// Pre-built image — see Dockerfile and scripts/rebuild-and-push.sh
 	// "image": "mcr.microsoft.com/devcontainers/base:noble",
-	"image": "localhost:5001/ubuntu:latest",
+	"image": "localhost:5001/ubuntu-slim:latest",
 	"features": {
 		"ghcr.io/hwaien/devcontainer-features/match-host-time-zone": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
@@ -34,9 +34,9 @@
 		"54327": { "onAutoForward": "ignore" }
 	},
 	// lifecycle scripts
-	"initializeCommand": "bash .devcontainer/ubuntu/initialize.sh",
-	"postCreateCommand": "bash .devcontainer/ubuntu/postCreate.sh",
-	"postStartCommand": "bash .devcontainer/ubuntu/postStart.sh",
+	"initializeCommand": "bash .devcontainer/ubuntu-slim/initialize.sh",
+	"postCreateCommand": "bash .devcontainer/ubuntu-slim/postCreate.sh",
+	"postStartCommand": "bash .devcontainer/ubuntu-slim/postStart.sh",
 	"customizations": {
 		"vscode": {
 			"extensions": [

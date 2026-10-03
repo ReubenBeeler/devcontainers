@@ -10,8 +10,8 @@ git submodule add git@github.com:ReubenBeeler/devcontainers.git .devcontainer/
 ## Variants
 | Variant | Base | Notes |
 | --- | --- | --- |
-| `ubuntu/` | prebuilt `localhost:5001/ubuntu` | Built AOT. A minimal container for faster devcontainer development and testing. |
-| `ubuntu-flutter/` | prebuilt `localhost:5001/ubuntu-flutter` | Built AOT. Flutter, Android SDK + emulator, headless desktop. |
+| `ubuntu-slim/` | prebuilt `localhost:5001/ubuntu-slim` | Built AOT. A minimal container for faster devcontainer development and testing. |
+| `ubuntu-everything/` | prebuilt `localhost:5001/ubuntu-everything` | Built AOT. Flutter, Android SDK + emulator, headless desktop. |
 
 ## Prebuilt images
 Both variants bake their dependencies into a Docker image
@@ -26,10 +26,10 @@ name.
 
 ```bash
 # Rebuild after editing a Dockerfile, then reopen the container
-bash scripts/rebuild-and-push.sh ubuntu-flutter
+bash scripts/rebuild-and-push.sh ubuntu-everything
 
 # Build only if the image is missing (what each initialize.sh calls)
-bash scripts/ensure-image.sh ubuntu-flutter
+bash scripts/ensure-image.sh ubuntu-everything
 
 # Manage the shared registry container
 bash scripts/setup-local-registry.sh list

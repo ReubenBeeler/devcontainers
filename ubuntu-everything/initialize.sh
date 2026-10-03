@@ -19,7 +19,7 @@ mkdir -p "${LOCK_DIR}"
 
 # ── Docker image ──────────────────────────────────────────────────────────────
 # ensure-image.sh is shared by all variants (see scripts/); passing this directory
-# selects the Dockerfile to build and names the image "ubuntu-flutter".
+# selects the Dockerfile to build and names the image "ubuntu-everything".
 echo "==> Ensuring Docker image is available..."
 bash "${SCRIPT_DIR}/../scripts/ensure-image.sh" "${SCRIPT_DIR}"
 

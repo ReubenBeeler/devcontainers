@@ -11,5 +11,5 @@ package.json
 # statusline was once copied from the host into the workspace; transient,
 # not committed. Both variants now bind-mount ~/.claude instead, so nothing
 # stages these — the entries only cover leftover copies on disk.
-ubuntu/statusline.sh
-ubuntu-flutter/statusline.sh
+ubuntu-slim/statusline.sh
+ubuntu-everything/statusline.sh

@@ -1,10 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Ubuntu Flutter",
+	"name": "Ubuntu Everything",
 	// Pre-built image — see Dockerfile and scripts/rebuild-and-push.sh
 	// "image": "mcr.microsoft.com/devcontainers/base:noble",
-	"image": "localhost:5001/ubuntu-flutter:latest",
+	"image": "localhost:5001/ubuntu-everything:latest",
 	"features": {
 		"ghcr.io/hwaien/devcontainer-features/match-host-time-zone": {},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
@@ -53,9 +53,9 @@
 		"54328": { "onAutoForward": "ignore" },
 		"54329": { "onAutoForward": "ignore" }
 	},
-	"initializeCommand": "bash .devcontainer/ubuntu-flutter/initialize.sh",
-	"postCreateCommand": "bash .devcontainer/ubuntu-flutter/postCreate.sh",
-	"postStartCommand": "bash .devcontainer/ubuntu-flutter/postStart.sh",
+	"initializeCommand": "bash .devcontainer/ubuntu-everything/initialize.sh",
+	"postCreateCommand": "bash .devcontainer/ubuntu-everything/postCreate.sh",
+	"postStartCommand": "bash .devcontainer/ubuntu-everything/postStart.sh",
 	"customizations": {
 		"vscode": {
 			// This container runs --network=host, so it shares ONE network

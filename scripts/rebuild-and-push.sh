@@ -4,7 +4,7 @@
 #
 # A variant is identified by the directory holding its Dockerfile; that
 # directory is both the build context and — via its basename — the image name.
-# So .devcontainer/ubuntu-flutter/ builds localhost:5001/ubuntu-flutter:latest.
+# So .devcontainer/ubuntu-everything/ builds localhost:5001/ubuntu-everything:latest.
 #
 # Usage:
 #   bash scripts/rebuild-and-push.sh <variant-dir>
@@ -16,7 +16,7 @@ set -euo pipefail
 CONTEXT_DIR="$(cd "${1:-$PWD}" && pwd)"
 if [ ! -f "${CONTEXT_DIR}/Dockerfile" ]; then
 	echo "ERROR: no Dockerfile in ${CONTEXT_DIR}" >&2
-	echo "Pass the variant directory, e.g. bash scripts/rebuild-and-push.sh ubuntu-flutter" >&2
+	echo "Pass the variant directory, e.g. bash scripts/rebuild-and-push.sh ubuntu-everything" >&2
 	exit 1
 fi
 
